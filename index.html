@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="id" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Nahwu Wadhih Jilid 2 - Evaluasi Santri</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for Arabic & Latin -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc;
+        }
+        .arabic-text {
+            font-family: 'Amiri', serif;
+            direction: rtl;
+        }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Header Navigation -->
+    <header class="bg-emerald-700 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-wrap justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="bg-emerald-800 p-2 rounded-lg text-2xl font-bold">📖</div>
+                <div>
+                    <h1 class="font-bold text-lg md:text-xl">Aplikasi Kuis Nahwu Wadhih (Jilid 2)</h1>
+                    <p class="text-xs text-emerald-200">Evaluasi Pemahaman 10 Santri • 10 Soal per Santri</p>
+                </div>
+            </div>
+            <button onclick="showLeaderboardModal()" class="mt-2 md:mt-0 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold px-4 py-2 rounded-lg transition shadow">
+                📊 Rekap Nilai 10 Santri
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-4xl mx-auto px-4 py-8 flex-grow w-full">
+
+        <!-- Step 1: Santri Selection Screen -->
+        <div id="santri-select-screen" class="bg-white rounded-2xl shadow-md p-6 md:p-8 border border-slate-100">
+            <div class="text-center max-w-xl mx-auto mb-8">
+                <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Pilih Peserta</span>
+                <h2 class="text-2xl font-bold text-slate-800 mt-2">Pilih / Masukkan Nama Santri</h2>
+                <p class="text-slate-500 text-sm mt-1">Setiap santri akan mendapatkan 10 soal evaluasi yang mencakup 6 Bab Nahwu Wadhih Jilid 2.</p>
+            </div>
+
+            <!-- Grid 10 Santri -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4 mb-8" id="santri-grid">
+                <!-- Javascript will inject 10 santri cards here -->
+            </div>
+
+            <!-- Topic Coverage Banner -->
+            <div class="bg-slate-50 rounded-xl p-5 border border-slate-200 text-sm">
+                <h3 class="font-bold text-slate-700 mb-2 flex items-center gap-2">
+                    <span>📚</span> Cakupan Materi Evaluasi (Nahwu Wadhih Jilid 2):
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-slate-600 arabic-text text-right">
+                    <div class="bg-white p-2 rounded border border-slate-200">1. تقسيم الفعل إلى صحيح الآخر ومعتل الآخر</div>
+                    <div class="bg-white p-2 rounded border border-slate-200">2. المبني والمعرب</div>
+                    <div class="bg-white p-2 rounded border border-slate-200">3. أنواع البناء</div>
+                    <div class="bg-white p-2 rounded border border-slate-200">4. أنواع الإعراب</div>
+                    <div class="bg-white p-2 rounded border border-slate-200">5. أحوال بناء الأمر</div>
+                    <div class="bg-white p-2 rounded border border-slate-200">6. أحوال بناء المضارع</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: Quiz Execution Screen -->
+        <div id="quiz-screen" class="hidden bg-white rounded-2xl shadow-md p-6 md:p-8 border border-slate-100">
+            <!-- Top Quiz Bar -->
+            <div class="flex justify-between items-center border-b pb-4 mb-6">
+                <div>
+                    <span class="text-xs text-slate-400 font-semibold uppercase">Santri Aktif</span>
+                    <h3 id="active-santri-name" class="font-bold text-lg text-emerald-700">Nama Santri</h3>
+                </div>
+                <div class="text-right">
+                    <span id="question-progress" class="text-sm font-bold text-slate-700">Soal 1 / 10</span>
+                    <div class="w-32 bg-slate-200 h-2 rounded-full mt-1 overflow-hidden">
+                        <div id="progress-bar" class="bg-emerald-600 h-full transition-all duration-300" style="width: 10%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question Box -->
+            <div class="mb-6">
+                <span id="question-topic-tag" class="bg-slate-100 text-slate-600 text-xs font-semibold px-2.5 py-1 rounded">Bab: -</span>
+                <div id="question-text" class="text-lg font-medium text-slate-800 mt-3 leading-relaxed">
+                    <!-- Text Soal -->
+                </div>
+                <div id="question-arabic" class="arabic-text text-2xl font-bold text-slate-900 mt-3 p-4 bg-emerald-50 rounded-xl border border-emerald-100 text-center leading-loose">
+                    <!-- Teks Arab Soal jika ada -->
+                </div>
+            </div>
+
+            <!-- Options Box -->
+            <div id="options-container" class="space-y-3 mb-8">
+                <!-- Javascript will inject options -->
+            </div>
+
+            <!-- Hint & Explanation Section (hidden initially) -->
+            <div id="explanation-box" class="hidden mb-6 p-4 rounded-xl border">
+                <div id="explanation-title" class="font-bold text-sm mb-1"></div>
+                <div id="explanation-text" class="text-sm"></div>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="flex justify-between items-center pt-4 border-t">
+                <button id="btn-cancel" onclick="confirmExitQuiz()" class="px-4 py-2 border border-slate-300 text-slate-600 hover:bg-slate-50 rounded-lg text-sm font-medium">
+                    Keluar Kuis
+                </button>
+                <button id="btn-next" onclick="submitOrNextAnswer()" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg text-sm transition shadow">
+                    Jawab & Lanjut ➔
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 3: Result Screen -->
+        <div id="result-screen" class="hidden bg-white rounded-2xl shadow-md p-6 md:p-8 border border-slate-100 text-center">
+            <div class="text-5xl mb-4">🎉</div>
+            <h2 class="text-2xl font-bold text-slate-800">Kuis Selesai!</h2>
+            <p class="text-slate-500 text-sm mt-1">Hasil Evaluasi Santri:</p>
+            <h3 id="result-santri-name" class="text-xl font-bold text-emerald-700 mt-2">Nama Santri</h3>
+
+            <!-- Score Circle -->
+            <div class="my-6 inline-flex flex-col items-center justify-center w-36 h-36 rounded-full bg-emerald-50 border-4 border-emerald-500">
+                <span id="final-score" class="text-4xl font-extrabold text-emerald-800">0</span>
+                <span class="text-xs text-emerald-600 font-semibold">Skor Akhir (0-100)</span>
+            </div>
+
+            <div id="score-summary-stats" class="grid grid-cols-2 gap-4 max-w-sm mx-auto mb-8 text-left text-sm">
+                <div class="bg-slate-50 p-3 rounded-lg border text-center">
+                    <span class="text-slate-400 text-xs block">Jawaban Benar</span>
+                    <span id="summary-correct" class="text-lg font-bold text-emerald-600">0 / 10</span>
+                </div>
+                <div class="bg-slate-50 p-3 rounded-lg border text-center">
+                    <span class="text-slate-400 text-xs block">Jawaban Salah</span>
+                    <span id="summary-wrong" class="text-lg font-bold text-rose-600">0 / 10</span>
+                </div>
+            </div>
+
+            <!-- Review Questions Accordion -->
+            <div class="text-left mb-8 border rounded-xl overflow-hidden">
+                <div class="bg-slate-100 px-4 py-3 font-bold text-slate-700 text-sm flex justify-between items-center">
+                    <span>Detail Jawaban & Pembahasan</span>
+                </div>
+                <div id="review-list" class="divide-y max-h-96 overflow-y-auto">
+                    <!-- Review items injected by JS -->
+                </div>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-4">
+                <button onclick="backToSantriSelect()" class="px-6 py-2.5 bg-slate-700 hover:bg-slate-800 text-white font-semibold rounded-lg text-sm transition">
+                    📋 Kembali ke Daftar Santri
+                </button>
+                <button onclick="showLeaderboardModal()" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg text-sm transition">
+                    📊 Lihat Rekap Nilai 10 Santri
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Modal Rekap Nilai -->
+    <div id="leaderboard-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-2xl w-full p-6 overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h3 class="font-bold text-lg text-slate-800">📊 Rekapitulasi Nilai 10 Santri</h3>
+                <button onclick="closeLeaderboardModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+            </div>
+            
+            <div class="overflow-y-auto flex-grow mb-4">
+                <table class="w-full text-sm text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-100 text-slate-600 uppercase text-xs">
+                            <th class="p-3 rounded-l-lg">No</th>
+                            <th class="p-3">Nama Santri</th>
+                            <th class="p-3 text-center">Status</th>
+                            <th class="p-3 text-right rounded-r-lg">Nilai</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboard-tbody" class="divide-y">
+                        <!-- Injected by JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="flex justify-between items-center pt-3 border-t">
+                <button onclick="resetAllScores()" class="text-xs text-rose-600 hover:underline font-semibold">
+                    🗑️ Reset Semua Nilai
+                </button>
+                <button onclick="closeLeaderboardModal()" class="px-4 py-2 bg-slate-800 text-white text-sm font-semibold rounded-lg">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Application Logic -->
+    <script>
+        // Data 10 Santri
+        let santriList = [
+            { id: 1, name: "Santri 1 (Ahmad)", score: null, answers: [] },
+            { id: 2, name: "Santri 2 (Muhammad)", score: null, answers: [] },
+            { id: 3, name: "Santri 3 (Ali)", score: null, answers: [] },
+            { id: 4, name: "Santri 4 (Umar)", score: null, answers: [] },
+            { id: 5, name: "Santri 5 (Utsman)", score: null, answers: [] },
+            { id: 6, name: "Santri 6 (Fatimah)", score: null, answers: [] },
+            { id: 7, name: "Santri 7 (Aisyah)", score: null, answers: [] },
+            { id: 8, name: "Santri 8 (Zaid)", score: null, answers: [] },
+            { id: 9, name: "Santri 9 (Hasan)", score: null, answers: [] },
+            { id: 10, name: "Santri 10 (Husain)", score: null, answers: [] }
+        ];
+
+        // Bank Soal Komprehensif Nahwu Wadhih Jilid 2
+        const masterQuestions = [
+            // BAB 1: تقسيم الفعل إلى صحيح الآخر ومعتل الآخر
+            {
+                topic: "تقسيم الفعل إلى صحيح الآخر ومعتل الآخر",
+                question: "Mana di antara fi'il berikut yang tergolong Fi'il Mu'tal Al-Akhir bil-Alif (معتل الآخر بالألف)?",
+                arabic: "دَعَا - يَدْنُو - يَبْنِي - يَسْتَحِمُّ",
+                options: [
+                    { text: "دَعَا", isCorrect: true, rationale: "Kata دَعَا diakhiri huruf Alif (secara lafazh/pengucapan) sehingga dinamakan Mu'tal Al-Akhir bil-Alif." },
+                    { text: "يَدْنُو", isCorrect: false, rationale: "Kata يَدْنُو diakhiri huruf Wau (Mu'tal bil-Wau)." },
+                    { text: "يَبْنِي", isCorrect: false, rationale: "Kata يَبْنِي diakhiri huruf Ya' (Mu'tal bil-Ya')." },
+                    { text: "يَسْتَحِمُّ", isCorrect: false, rationale: "Kata يَسْتَحِمُّ diakhiri huruf Mim (Sahih Al-Akhir)." }
+                ]
+            },
+            {
+                topic: "تقسيم الفعل إلى صحيح الآخر ومعتل الآخر",
+                question: "Fi'il Sahih Al-Akhir (الفعل الصحيح الآخر) didefinisikan sebagai:",
+                arabic: "القاعدة: الفعل الصحيح الآخر",
+                options: [
+                    { text: "Fi'il yang akhirnya bukan huruf Alif, Wau, atau Ya'", isCorrect: true, rationale: "Sesuai kaidah 26: Fi'il sahih akhir adalah fi'il yang akhirnya tidak terdapat salah satu dari huruf 'illah (Alif, Wau, Ya')." },
+                    { text: "Fi'il yang akhirnya selalu berharakat Sukun", isCorrect: false, rationale: "Harakat akhir berkaitan dengan i'rab/bina', bukan definisi sahih akhir." },
+                    { text: "Fi'il yang memiliki tiga huruf asal di tengahnya", isCorrect: false, rationale: "Ini berkaitan dengan fi'il tsulatsi, bukan huruf akhir." },
+                    { text: "Fi'il yang diakhiri huruf Alif Lazimah", isCorrect: false, rationale: "Huruf Alif adalah huruf 'illah." }
+                ]
+            },
+            {
+                topic: "تقسيم الفعل إلى صحيح الآخر ومعتل الآخر",
+                question: "Pilihlah kelompok kata yang SEMUANYA merupakan Fi'il Mu'tal Al-Akhir (معتل الآخر):",
+                arabic: "أَلْقَى - سَرُوَ - خَشِيَ",
+                options: [
+                    { text: "أَلْقَى - سَرُوَ - خَشِيَ", isCorrect: true, rationale: "Ketiganya diakhiri huruf 'illah: Alif (ألقى), Wau (سرو), dan Ya' (خشى)." },
+                    { text: "أَظْلَمَ - اتَّقَدَ - يَسْتَحِمُّ", isCorrect: false, rationale: "Ketiganya adalah Fi'il Sahih Al-Akhir." },
+                    { text: "دَعَا - جَلَسَ - يَبْنِي", isCorrect: false, rationale: "Kata جَلَسَ adalah Sahih Al-Akhir." },
+                    { text: "يَلْقَى - يَشْرَبُ - يَدْنُو", isCorrect: false, rationale: "Kata يَشْرَبُ adalah Sahih Al-Akhir." }
+                ]
+            },
+
+            // BAB 2: المبني والمعرب
+            {
+                topic: "المبني والمعرب",
+                question: "Kategori kata berikut ini yang SEMUANYA berstatus Mabni (مبني) tanpa pengecualian adalah:",
+                arabic: "القاعدة: الحروف والأفعال المبنية",
+                options: [
+                    { text: "Semua Huruf, Fi'il Madhi, dan Fi'il 'Amar", isCorrect: true, rationale: "Sesuai Kaidah 28: Semua huruf, seluruh fi'il madhi, dan seluruh fi'il 'amar berstatus Mabni." },
+                    { text: "Semua Isim, Fi'il Mudhari', dan Fi'il Madhi", isCorrect: false, rationale: "Sebagian besar Isim dan Fi'il Mudhari' berstatus Mu'rab." },
+                    { text: "Semua Huruf dan Fi'il Mudhari'", isCorrect: false, rationale: "Fi'il Mudhari' pada dasarnya Mu'rab." },
+                    { text: "Isim Mufrad dan Fi'il 'Amar saja", isCorrect: false, rationale: "Isim mufrad pada dasarnya Mu'rab." }
+                ]
+            },
+            {
+                topic: "المبني والمعرب",
+                question: "Mengapa kata 'الْقُطْنُ' pada kalimat 'الْقُطْنُ عِمَادُ الثَّرْوَةِ' dan 'جَنَى الْفَلَّاحُ الْقُطْنَ' disebut kata Mu'rab (معرب)?",
+                arabic: "الْقُطْنُ عِمَادُ الثَّرْوَةِ / جَنَى الْفَلَّاحُ الْقُطْنَ",
+                options: [
+                    { text: "Karena harakat akhirnya berubah-ubah sesuai posisinya", isCorrect: true, rationale: "Sesuai Kaidah 27: Kata Mu'rab adalah kata yang akhirannya berubah sesuai kedudukannya dalam kalimat." },
+                    { text: "Karena diakhiri huruf sahih", isCorrect: false, rationale: "Mu'rab/Mabni tidak ditentukan semata-mata oleh sahih/mu'tal." },
+                    { text: "Karena berstatus sebagai Fa'il saja", isCorrect: false, rationale: "Pada contoh kedua kedudukannya adalah Ma'ful bih." },
+                    { text: "Karena berawalan Alif Lam", isCorrect: false, rationale: "Alif lam bukan syarat utama status mu'rab." }
+                ]
+            },
+
+            // BAB 3: أنواع البناء
+            {
+                topic: "أنواع البناء",
+                question: "Berapakah jumlah keadaan bina' (أنواع البناء) yang ملازم (tetap) pada akhir kata mabni?",
+                arabic: "أنواع البناء الأربعة",
+                options: [
+                    { text: "4 (Sukun, Fathah, Damm, Kasrah)", isCorrect: true, rationale: "Sesuai Kaidah 29: Keadaan yang menyertai akhir kata mabni ada 4, yaitu Sukun, Fath, Damm, dan Kasr." },
+                    { text: "3 (Raf', Nasb, Jar)", isCorrect: false, rationale: "Raf', Nasb, dan Jar adalah jenis I'rab, bukan jenis Bina'." },
+                    { text: "2 (Mabni Al-Fath & Mabni As-Sukun)", isCorrect: false, rationale: "Bina' juga mencakup Damm dan Kasr." },
+                    { text: "5 (Sukun, Fathah, Damm, Kasrah, Hadhf)", isCorrect: false, rationale: "Empat jenis utama bina' pada isim/kata dasar." }
+                ]
+            },
+            {
+                topic: "أنواع البناء",
+                question: "Tentukan jenis bina' pada kata 'أَمْسِ' dalam kalimat 'كَانَ أَمْسِ شَدِيدَ الْحَرِّ':",
+                arabic: "كَانَ أَمْسِ شَدِيدَ الْحَرِّ",
+                options: [
+                    { text: "مَبْنِيٌّ عَلَى الْكَسْرِ (Mabni 'ala Al-Kasr)", isCorrect: true, rationale: "Kata أَمْسِ selalu tetap diakhiri harakat Kasrah dalam semua susunan kalimat." },
+                    { text: "مَبْنِيٌّ عَلَى الْفَتْحِ (Mabni 'ala Al-Fath)", isCorrect: false, rationale: "Akhirannya berharakat kasrah." },
+                    { text: "مَبْنِيٌّ عَلَى الضَّمِّ (Mabni 'ala Ad-Damm)", isCorrect: false, rationale: "Kata yang mabni 'ala ad-damm contohnya حَيْثُ." },
+                    { text: "مَبْنِيٌّ عَلَى السُّكُونِ (Mabni 'ala As-Sukun)", isCorrect: false, rationale: "Kata yang mabni 'ala as-sukun contohnya كَمْ." }
+                ]
+            },
+
+            // BAB 4: أنواع الإعراب
+            {
+                topic: "أنواع الإعراب",
+                question: "Manakah di antara jenis I'rab berikut yang KHUSUS berlaku untuk Isim dan TIDAK BISA masuk pada Fi'il?",
+                arabic: "أنواع الإعراب: الجرّ",
+                options: [
+                    { text: "الْجَرُّ (Al-Jar)", isCorrect: true, rationale: "Sesuai Kaidah 33: Al-Jar khusus berlaku untuk Isim, sebagaimana Al-Jazm khusus berlaku untuk Fi'il." },
+                    { text: "الْجَزْمُ (Al-Jazm)", isCorrect: false, rationale: "Al-Jazm khusus untuk Fi'il." },
+                    { text: "الرَّفْعُ (Al-Raf')", isCorrect: false, rationale: "Al-Raf' berserikat antara Isim dan Fi'il." },
+                    { text: "النَّصْبُ (Al-Nasb)", isCorrect: false, rationale: "Al-Nasb berserikat antara Isim dan Fi'il." }
+                ]
+            },
+            {
+                topic: "أنواع الإعراب",
+                question: "Dua jenis I'rab yang berserikat (dapat masuk pada Isim maupun Fi'il Mudhari') adalah:",
+                arabic: "الرفع والنصب",
+                options: [
+                    { text: "الرَّفْعُ وَالنَّصْبُ (Al-Raf' & Al-Nasb)", isCorrect: true, rationale: "Sesuai Kaidah 33: Al-Raf' dan Al-Nasb sama-sama dapat masuk pada Isim dan Fi'il." },
+                    { text: "الْجَرُّ وَالْجَزْمُ (Al-Jar & Al-Jazm)", isCorrect: false, rationale: "Al-Jar khusus Isim, Al-Jazm khusus Fi'il." },
+                    { text: "الرَّفْعُ وَالْجَزْمُ (Al-Raf' & Al-Jazm)", isCorrect: false, rationale: "Al-Jazm tidak masuk pada Isim." },
+                    { text: "النَّصْبُ وَالْجَرُّ (Al-Nasb & Al-Jar)", isCorrect: false, rationale: "Al-Jar tidak masuk pada Fi'il." }
+                ]
+            },
+
+            // BAB 5: أحوال بناء الأمر
+            {
+                topic: "أحوال بناء الأمر",
+                question: "Fi'il 'Amar 'اِجْمَعُوا' (Ijma'uu) berstatus Mabni atas tanda apa?",
+                arabic: "اجْمَعُوا ثَمَرَ الْبُسْتَانِ",
+                options: [
+                    { text: "مَبْنِيٌّ عَلَى حَذْفِ النُّوْنِ (Mabni 'Ala Hadhfi An-Nun)", isCorrect: true, rationale: "Sesuai Kaidah 35: Fi'il 'Amar yang bersambung dengan Wau Jama'ah dibina atas Hadhf An-Nun." },
+                    { text: "مَبْنِيٌّ عَلَى الضَّمِّ (Mabni 'Ala Ad-Damm)", isCorrect: false, rationale: "Fi'il 'amar tidak dibina atas Damm, yang dibina atas Damm adalah fi'il Madhi bersambung Wau Jama'ah." },
+                    { text: "مَبْنِيٌّ عَلَى السُّكُونِ (Mabni 'Ala As-Sukun)", isCorrect: false, rationale: "Sukun untuk yang tidak bersambung apa-apa/bersambung Nun Niswah." },
+                    { text: "مَبْنِيٌّ عَلَى حَذْفِ حَرْفِ الْعِلَّةِ", isCorrect: false, rationale: "Hadhf huruf 'illah khusus untuk fi'il mu'tal akhir tunggal." }
+                ]
+            },
+            {
+                topic: "أحوال بناء الأمر",
+                question: "Tanda bina' untuk Fi'il 'Amar 'ادْعُ' (dari fi'il mu'tal دَعَا - يَدْعُو) adalah:",
+                arabic: "أُدْعُ الطَّبِيبَ",
+                options: [
+                    { text: "حَذْفُ حَرْفِ الْعِلَّةِ (Hadhf Huruf Al-'Illah)", isCorrect: true, rationale: "Sesuai Kaidah 35: Fi'il 'Amar yang mu'tal akhir dibina atas dibuangnya huruf 'illah (Wau)." },
+                    { text: "السُّكُونُ (As-Sukun)", isCorrect: false, rationale: "Harus membuang huruf 'illah wau di akhirnya." },
+                    { text: "الْفَتْحُ (Al-Fath)", isCorrect: false, rationale: "Al-Fath jika bersambung Nun Taukid." },
+                    { text: "حَذْفُ النُّوْنِ (Hadhf An-Nun)", isCorrect: false, rationale: "Hadhf nun untuk dhamir tatsniyah/jamak/mukhatabah." }
+                ]
+            },
+            {
+                topic: "أحوال بناء الأمر",
+                question: "Fi'il 'Amar dibina atas Sukun (مبني على السكون) dalam dua keadaan, yaitu:",
+                arabic: "أحوال بناء الأمر على السكون",
+                options: [
+                    { text: "Jika sahih akhir & tidak bersambung sesuatu, ATAU bersambung Nun Niswah", isCorrect: true, rationale: "Sesuai Kaidah 35: Dibina atas sukun jika sahih akhir dan tidak bersambung sesuatu, atau jika bersambung Nun Niswah." },
+                    { text: "Jika bersambung Nun Taukid atau Alif Ithnain", isCorrect: false, rationale: "Nun taukid = fathah; Alif ithnain = hadhf nun." },
+                    { text: "Jika mu'tal akhir dan bersambung Wau Jama'ah", isCorrect: false, rationale: "Mu'tal akhir = hadhf huruf 'illah." },
+                    { text: "Jika bersambung Ya' Mukhatabah", isCorrect: false, rationale: "Ya' mukhatabah = hadhf nun." }
+                ]
+            },
+
+            // BAB 6: أحوال بناء المضارع
+            {
+                topic: "أحوال بناء المضارع",
+                question: "Pada dasarnya Fi'il Mudhari' adalah Mu'rab. Kapan Fi'il Mudhari' menjadi Mabni 'Ala Al-Fath (مبني على الفتح)?",
+                arabic: "لَأَسْتَمِعَنَّ النَّصِيحَةَ",
+                options: [
+                    { text: "Ketika bersambung langsung dengan Nun Taukid (ثقيلة / خفيفة)", isCorrect: true, rationale: "Sesuai Kaidah 36: Fi'il mudhari' dibina atas Fath jika bersambung dengan Nun Taukid." },
+                    { text: "Ketika bersambung dengan Nun Niswah", isCorrect: false, rationale: "Dengan Nun Niswah menjadi Mabni 'ala As-Sukun." },
+                    { text: "Ketika kemasukan Amil Nawasib (أدوات النصب)", isCorrect: false, rationale: "Itu berstatus Mu'rab Mansub, bukan Mabni." },
+                    { text: "Ketika tidak didahului oleh amil apapun", isCorrect: false, rationale: "Itu berstatus Mu'rab Marfu'." }
+                ]
+            },
+            {
+                topic: "أحوال بناء المضارع",
+                question: "Analisis status I'rab/Bina' kata 'يَسْتَمِعْنَ' pada kalimat 'الطَّالِبَاتُ يَسْتَمِعْنَ النَّصِيحَةَ':",
+                arabic: "الطَّالِبَاتُ يَسْتَمِعْنَ النَّصِيحَةَ",
+                options: [
+                    { text: "مَبْنِيٌّ عَلَى السُّكُونِ (Mabni 'Ala As-Sukun) karena bersambung Nun Niswah", isCorrect: true, rationale: "Sesuai Kaidah 36: Fi'il mudhari' dibina atas Sukun jika bersambung dengan Nun Niswah." },
+                    { text: "مُعْرَبٌ مَرْفُوعٌ بِالضَّمَّةِ", isCorrect: false, rationale: "Adanya Nun Niswah membuatnya menjadi mabni." },
+                    { text: "مَبْنِيٌّ عَلَى الْفَتْحِ", isCorrect: false, rationale: "Mabni al-fath jika bersambung Nun Taukid." },
+                    { text: "مُعْرَبٌ مَجْزُومٌ بِالسُّكُونِ", isCorrect: false, rationale: "Bukan dalam keadaan jazm mu'rab, melainkan mabni sukun." }
+                ]
+            },
+            {
+                topic: "أحوال بناء المضارع",
+                question: "Manakah fi'il mudhari' yang berstatus MABNI dalam kalimat-kalimat berikut?",
+                arabic: "أَيُّ هَذِهِ الأَفْعَالِ مَبْنِيٌّ؟",
+                options: [
+                    { text: "لَيَذْهَبَنَّ الْغِلْمَانُ", isCorrect: true, rationale: "Kata لَيَذْهَبَنَّ bersambung Nun Taukid الثقيلة sehingga Mabni 'ala al-Fath." },
+                    { text: "يَذْهَبُ الْغِلْمَانُ إِلَى الْمَدْرَسَةِ", isCorrect: false, rationale: "Fi'il mudhari' mu'rab marfu' bid-dammah." },
+                    { text: "لَنْ يَذْهَبَ الْغِلْمَانُ", isCorrect: false, rationale: "Fi'il mudhari' mu'rab mansub bil-fathah." },
+                    { text: "لَمْ يَذْهَبْ الْغِلْمَانُ", isCorrect: false, rationale: "Fi'il mudhari' mu'rab majzum bis-sukun." }
+                ]
+            }
+        ];
+
+        // App State Variables
+        let currentSantriIndex = null;
+        let currentQuestions = [];
+        let currentQuestionIndex = 0;
+        let userAnswers = [];
+        let selectedOptionIndex = null;
+
+        // Initialize App
+        window.addEventListener('DOMContentLoaded', () => {
+            renderSantriGrid();
+            loadScoresFromStorage();
+        });
+
+        // Render Santri Cards
+        function renderSantriGrid() {
+            const grid = document.getElementById('santri-grid');
+            grid.innerHTML = '';
+
+            santriList.forEach((s, idx) => {
+                const card = document.createElement('div');
+                card.className = "bg-slate-50 hover:bg-emerald-50/50 border border-slate-200 rounded-xl p-4 flex justify-between items-center transition cursor-pointer";
+                
+                const hasScore = s.score !== null;
+                const scoreBadge = hasScore 
+                    ? `<span class="text-xs font-bold px-2.5 py-1 rounded-full ${s.score >= 70 ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">Nilai: ${s.score}</span>`
+                    : `<span class="text-xs font-medium bg-slate-200 text-slate-600 px-2.5 py-1 rounded-full">Belum Ujian</span>`;
+
+                card.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-full bg-emerald-600 text-white font-bold flex items-center justify-center text-sm">
+                            ${s.id}
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-800 text-sm">${s.name}</h4>
+                            <p class="text-xs text-slate-400">10 Soal Evaluasi</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        ${scoreBadge}
+                        <button onclick="startQuizForSantri(${idx})" class="mt-2 text-xs font-bold text-emerald-700 hover:text-emerald-800 block">
+                            ${hasScore ? 'Ulangi Kuis ➔' : 'Mulai Kuis ➔'}
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Start Quiz for Selected Santri
+        function startQuizForSantri(index) {
+            currentSantriIndex = index;
+            const santri = santriList[index];
+
+            // Shuffle & select 10 questions for this session
+            currentQuestions = getRandomQuestions(masterQuestions, 10);
+            currentQuestionIndex = 0;
+            userAnswers = [];
+            selectedOptionIndex = null;
+
+            document.getElementById('active-santri-name').innerText = santri.name;
+            
+            // Switch screen
+            document.getElementById('santri-select-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            document.getElementById('result-screen').classList.add('hidden');
+
+            loadQuestion();
+        }
+
+        // Helper: Random shuffle array
+        function getRandomQuestions(sourceArray, count) {
+            let shuffled = [...sourceArray].sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, count);
+        }
+
+        // Load Question UI
+        function loadQuestion() {
+            selectedOptionIndex = null;
+            const q = currentQuestions[currentQuestionIndex];
+
+            // Progress text & bar
+            document.getElementById('question-progress').innerText = `Soal ${currentQuestionIndex + 1} / ${currentQuestions.length}`;
+            document.getElementById('progress-bar').style.width = `${((currentQuestionIndex + 1) / currentQuestions.length) * 100}%`;
+
+            // Topic & Question text
+            document.getElementById('question-topic-tag').innerText = `Bab: ${q.topic}`;
+            document.getElementById('question-text').innerText = q.question;
+
+            // Arabic text box
+            const arabicBox = document.getElementById('question-arabic');
+            if (q.arabic) {
+                arabicBox.innerText = q.arabic;
+                arabicBox.classList.remove('hidden');
+            } else {
+                arabicBox.classList.add('hidden');
+            }
+
+            // Options container
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-4 rounded-xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/30 transition flex items-start space-x-3 text-slate-700 text-sm font-medium";
+                btn.onclick = () => selectOption(idx);
+                btn.id = `option-btn-${idx}`;
+
+                btn.innerHTML = `
+                    <span class="w-6 h-6 rounded-full border border-slate-300 flex-shrink-0 flex items-center justify-center text-xs font-bold text-slate-500 bg-white">
+                        ${String.fromCharCode(65 + idx)}
+                    </span>
+                    <span class="flex-grow pt-0.5">${opt.text}</span>
+                `;
+                optionsContainer.appendChild(btn);
+            });
+
+            // Hide explanation box & Reset next button
+            document.getElementById('explanation-box').classList.add('hidden');
+            const btnNext = document.getElementById('btn-next');
+            btnNext.innerText = (currentQuestionIndex === currentQuestions.length - 1) ? 'Selesaikan Kuis 🏁' : 'Jawab & Lanjut ➔';
+        }
+
+        // Select Option Handler
+        function selectOption(idx) {
+            selectedOptionIndex = idx;
+            const optionsCount = currentQuestions[currentQuestionIndex].options.length;
+
+            for (let i = 0; i < optionsCount; i++) {
+                const btn = document.getElementById(`option-btn-${i}`);
+                if (i === idx) {
+                    btn.className = "w-full text-left p-4 rounded-xl border-2 border-emerald-600 bg-emerald-50 text-slate-900 text-sm font-medium flex items-start space-x-3 shadow-sm";
+                    btn.querySelector('span').className = "w-6 h-6 rounded-full bg-emerald-600 text-white flex-shrink-0 flex items-center justify-center text-xs font-bold";
+                } else {
+                    btn.className = "w-full text-left p-4 rounded-xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/30 transition flex items-start space-x-3 text-slate-700 text-sm font-medium opacity-70";
+                    btn.querySelector('span').className = "w-6 h-6 rounded-full border border-slate-300 flex-shrink-0 flex items-center justify-center text-xs font-bold text-slate-500 bg-white";
+                }
+            }
+        }
+
+        // Submit or Next Question
+        function submitOrNextAnswer() {
+            if (selectedOptionIndex === null) {
+                alert("Silakan pilih salah satu jawaban terlebih dahulu!");
+                return;
+            }
+
+            const q = currentQuestions[currentQuestionIndex];
+            const isCorrect = q.options[selectedOptionIndex].isCorrect;
+
+            // Save answer
+            userAnswers.push({
+                question: q.question,
+                topic: q.topic,
+                arabic: q.arabic,
+                userChoice: q.options[selectedOptionIndex].text,
+                isCorrect: isCorrect,
+                correctChoice: q.options.find(o => o.isCorrect).text,
+                rationale: q.options[selectedOptionIndex].rationale
+            });
+
+            currentQuestionIndex++;
+
+            if (currentQuestionIndex < currentQuestions.length) {
+                loadQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        // Finish Quiz & Show Results
+        function finishQuiz() {
+            const correctCount = userAnswers.filter(a => a.isCorrect).length;
+            const finalScore = Math.round((correctCount / currentQuestions.length) * 100);
+
+            // Save to Santri state
+            santriList[currentSantriIndex].score = finalScore;
+            santriList[currentSantriIndex].answers = userAnswers;
+            saveScoresToStorage();
+
+            // Render Result UI
+            document.getElementById('result-santri-name').innerText = santriList[currentSantriIndex].name;
+            document.getElementById('final-score').innerText = finalScore;
+            document.getElementById('summary-correct').innerText = `${correctCount} / ${currentQuestions.length}`;
+            document.getElementById('summary-wrong').innerText = `${currentQuestions.length - correctCount} / ${currentQuestions.length}`;
+
+            // Render Detailed Reviews
+            const reviewList = document.getElementById('review-list');
+            reviewList.innerHTML = '';
+
+            userAnswers.forEach((ans, idx) => {
+                const item = document.createElement('div');
+                item.className = "p-4 text-sm bg-white";
+                
+                const statusBadge = ans.isCorrect
+                    ? `<span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2 py-0.5 rounded">Benar</span>`
+                    : `<span class="bg-rose-100 text-rose-800 text-xs font-bold px-2 py-0.5 rounded">Salah</span>`;
+
+                item.innerHTML = `
+                    <div class="flex justify-between items-start mb-1">
+                        <span class="font-bold text-slate-700">Soal #${idx + 1} (${ans.topic})</span>
+                        ${statusBadge}
+                    </div>
+                    <p class="text-slate-800 font-medium mb-1">${ans.question}</p>
+                    ${ans.arabic ? `<p class="arabic-text text-lg text-emerald-800 bg-emerald-50/50 p-2 rounded my-1 text-center">${ans.arabic}</p>` : ''}
+                    <div class="text-xs text-slate-600 mt-2 space-y-1 bg-slate-50 p-2.5 rounded border">
+                        <div><strong class="text-slate-700">Jawaban Santri:</strong> ${ans.userChoice}</div>
+                        ${!ans.isCorrect ? `<div><strong class="text-emerald-700">Jawaban Benar:</strong> ${ans.correctChoice}</div>` : ''}
+                        <div class="text-slate-500 italic mt-1 border-t pt-1">💡 <strong>Pembahasan:</strong> ${ans.rationale}</div>
+                    </div>
+                `;
+                reviewList.appendChild(item);
+            });
+
+            // Switch Screen
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            renderSantriGrid();
+        }
+
+        // Return to Santri List
+        function backToSantriSelect() {
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('santri-select-screen').classList.remove('hidden');
+        }
+
+        // Exit Quiz Confirmation
+        function confirmExitQuiz() {
+            if (confirm("Apakah Anda yakin ingin keluar dari kuis? Progres soal santri ini akan hilang.")) {
+                backToSantriSelect();
+            }
+        }
+
+        // Leaderboard Modal Logic
+        function showLeaderboardModal() {
+            const tbody = document.getElementById('leaderboard-tbody');
+            tbody.innerHTML = '';
+
+            santriList.forEach((s, idx) => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50";
+
+                const scoreText = s.score !== null ? `<span class="font-bold text-emerald-700">${s.score}</span>` : `<span class="text-slate-400 font-normal">-</span>`;
+                const statusText = s.score !== null 
+                    ? `<span class="bg-emerald-100 text-emerald-800 text-xs px-2 py-0.5 rounded-full font-semibold">Selesai</span>`
+                    : `<span class="bg-slate-100 text-slate-500 text-xs px-2 py-0.5 rounded-full">Belum</span>`;
+
+                tr.innerHTML = `
+                    <td class="p-3 font-semibold text-slate-500">${idx + 1}</td>
+                    <td class="p-3 font-bold text-slate-800">${s.name}</td>
+                    <td class="p-3 text-center">${statusText}</td>
+                    <td class="p-3 text-right font-mono">${scoreText}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('leaderboard-modal').classList.remove('hidden');
+        }
+
+        function closeLeaderboardModal() {
+            document.getElementById('leaderboard-modal').classList.add('hidden');
+        }
+
+        // Local Storage Helpers
+        function saveScoresToStorage() {
+            localStorage.setItem('nahwu_santri_scores', JSON.stringify(santriList));
+        }
+
+        function loadScoresFromStorage() {
+            const data = localStorage.getItem('nahwu_santri_scores');
+            if (data) {
+                try {
+                    const parsed = JSON.parse(data);
+                    if (Array.isArray(parsed) && parsed.length === 10) {
+                        santriList = parsed;
+                        renderSantriGrid();
+                    }
+                } catch(e) {
+                    console.error("Error loading saved scores", e);
+                }
+            }
+        }
+
+        function resetAllScores() {
+            if (confirm("Apakah Ustadz yakin ingin menghapus semua rekap nilai santri?")) {
+                santriList.forEach(s => {
+                    s.score = null;
+                    s.answers = [];
+                });
+                saveScoresToStorage();
+                renderSantriGrid();
+                showLeaderboardModal();
+            }
+        }
+    </script>
+</body>
+</html>
+```eof
+
+### Fitur Utama Aplikasi Kuis Nahwu Wadhih:
+1. **Daftar 10 Santri**: Memudahkan Ustadz/Pengajar memilih santri mana yang sedang mengambil ujian (Santri 1 s.d. Santri 10) atau mengulangi ujian.
+2. **Sesuai Materi Kitab**: Semua soal dan pembahasan disusun secara teliti berdasarkan kaidah dalam *Kitab An-Nahwu Al-Wadhih Jilid 2* untuk 6 bab yang diminta:
+   - Pembagian Fi'il Sahih Akhir & Mu'tal Akhir
+   - Mabni dan Mu'rab
+   - Jenis-jenis Bina' (*Sukun, Fathah, Damm, Kasrah*)
+   - Jenis-jenis I'rab (*Raf', Nasb, Jar, Jazm*)
+   - Keadaan Bina' Fi'il 'Amar (*Sukun, Fathah, Hadhf Huruf 'Illah, Hadhf Nun*)
+   - Keadaan Bina' Fi'il Mudhari' (*Fathah dengan Nun Taukid, Sukun dengan Nun Niswah*)
+3. **Penyajian Interaktif**: Dilengkapi dengan teks Arab berharakat tajam, penghitungan skor otomatis (0-100), dan rekapitulasi nilai untuk seluruh 10 santri.
+
+Semoga aplikasi kuis ini bermanfaat dalam menguji dan memperdalam pemahaman Nahwu para santri!
